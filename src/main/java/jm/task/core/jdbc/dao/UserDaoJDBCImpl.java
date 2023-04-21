@@ -3,12 +3,10 @@ package jm.task.core.jdbc.dao;
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class UserDaoJDBCImpl implements UserDao {
     public UserDaoJDBCImpl() {
@@ -16,7 +14,7 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void createUsersTable() {
-        try (Statement st = Util.getBDConnection().createStatement()) {
+        try (Connection cn = Util.getBDConnection(); Statement st = cn.createStatement()) {
             st.executeUpdate("create table if not exists user (" +
                     "id bigint primary key auto_increment," +
                     "name varchar(30)," +
@@ -30,7 +28,7 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void dropUsersTable() {
-        try (Statement st = Util.getBDConnection().createStatement()) {
+        try (Connection cn = Util.getBDConnection(); Statement st = cn.createStatement()) {
             st.executeUpdate("drop table if exists user");
             System.out.println("Drop table User succeed");
         } catch (SQLException e) {
@@ -40,7 +38,7 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void saveUser(String name, String lastName, byte age) {
-        try (PreparedStatement pst = Util.getBDConnection()
+        try (Connection cn = Util.getBDConnection(); PreparedStatement pst = cn
                 .prepareStatement("insert into User (name, lastName, age) VALUES (?, ?, ?)")) {
             pst.setString(1, name);
             pst.setString(2, lastName);
@@ -54,7 +52,7 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void removeUserById(long id) {
-        try (PreparedStatement pst = Util.getBDConnection()
+        try (Connection cn = Util.getBDConnection(); PreparedStatement pst = cn
                 .prepareStatement("delete from User where id = ?")) {
             pst.setLong(1, id);
             pst.executeUpdate();
@@ -68,9 +66,10 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public List<User> getAllUsers() {
         List lst = new ArrayList<User>();
-        try (ResultSet rs = Util.getBDConnection().createStatement()
+        try (Connection cn = Util.getBDConnection(); ResultSet rs = cn.createStatement()
                 .executeQuery("select * from user")) {
             while (rs.next()) {
+
                 User user = new User(rs.getString("Name")
                         , rs.getString("lastName"), rs.getByte("age"));
                 user.setId(rs.getLong("id"));
@@ -84,7 +83,7 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void cleanUsersTable() {
-        try (Statement st = Util.getBDConnection().createStatement()) {
+        try (Connection cn = Util.getBDConnection(); Statement st = cn.createStatement()) {
             st.executeUpdate("truncate table user");
             System.out.println("Table User successfully cleared");
         } catch (SQLException e) {
