@@ -1,6 +1,7 @@
 package jm.task.core.jdbc;
 
 
+import jm.task.core.jdbc.dao.UserDaoHibernateImpl;
 import jm.task.core.jdbc.dao.UserDaoJDBCImpl;
 import jm.task.core.jdbc.dao.UserDao;
 import jm.task.core.jdbc.model.User;
@@ -15,9 +16,9 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) {
         List<User> users;
-        UserDao udao = new UserDaoJDBCImpl();
+        UserDao udao = new UserDaoHibernateImpl();
         udao.createUsersTable();
         udao.saveUser("Кефир", "Пивасоф", (byte) 3);
         udao.saveUser("Алень", "Золотые Рога", (byte) 30);
